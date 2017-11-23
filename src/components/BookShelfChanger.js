@@ -6,7 +6,7 @@ export default ({ bookId, value, onMoveToBookshelf }) => (
       value={value}
       onChange={e => onMoveToBookshelf(bookId, e.target.value)}
     >
-      <option value="none" disabled>
+      <option value="moveTo" disabled>
         Move to...
       </option>
       <option value="currentlyReading">Currently Reading</option>
