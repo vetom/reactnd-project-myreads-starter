@@ -2,26 +2,24 @@ import React, { Component } from "react";
 import BookShelfChanger from "./BookShelfChanger";
 
 export default class extends Component {
-  state = {};
+  state = {
+    width: 128,
+    height: 192,
+    backgroundImage: ""
+  };
 
   componentDidMount() {
-    if (!this.props.thumbnail) {
-      this.setState({
-        width: 128,
-        height: 192,
-        backgroundImage: ""
-      });
+    if (this.props.thumbnail) {
+      let img = new Image();
+      img.src = this.props.thumbnail;
+      img.onload = () => {
+        this.setState({
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          backgroundImage: img.src
+        });
+      };
     }
-
-    var img = new Image();
-    img.src = this.props.thumbnail;
-    img.onload = () => {
-      this.setState({
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-        backgroundImage: img.src
-      });
-    };
   }
 
   render() {

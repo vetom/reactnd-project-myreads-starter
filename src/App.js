@@ -1,8 +1,8 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
-import Bookshelf from "./components/Bookshelf";
 import Search from "./pages/Search";
-import { Link, Route, Switch } from "react-router-dom";
+import Home from "./pages/Home";
+import { Route } from "react-router-dom";
 import "./App.css";
 
 class BooksApp extends React.Component {
@@ -30,13 +30,23 @@ class BooksApp extends React.Component {
 
   search = query => {
     if (query) {
-      BooksAPI.search(query, 20).then(searchResult => {
-        if (Array.isArray(searchResult)) this.setState({ searchResult });
-      });
+      BooksAPI.search(query, 20).then(
+        searchResult => {
+          if (!Array.isArray(searchResult)) searchResult = [];
+          this.setState({ searchResult });
+        },
+        () => {
+          let searchResult = [];
+          this.setState({ searchResult });
+        }
+      );
+    } else {
+      let searchResult = [];
+      this.setState({ searchResult });
     }
   };
 
-  componentDidMount() {
+  loadBooks = () => {
     let bookshelfHash = {};
     BooksAPI.getAll().then(books => {
       books.forEach(book => {
@@ -44,8 +54,7 @@ class BooksApp extends React.Component {
       });
       this.setState({ books, bookshelfHash });
     });
-    console.log("componentDidMount");
-  }
+  };
 
   render() {
     return (
@@ -65,39 +74,11 @@ class BooksApp extends React.Component {
           exact
           path="/"
           render={() => (
-            <div className="list-books">
-              <div className="list-books-title">
-                <h1>MyReads</h1>
-              </div>
-              <div className="list-books-content">
-                <div>
-                  <Bookshelf
-                    onMoveToBookshelf={this.moveToBookshelf}
-                    title="Currently Reading"
-                    books={this.state.books.filter(
-                      book => book.shelf === "currentlyReading"
-                    )}
-                  />
-                  <Bookshelf
-                    onMoveToBookshelf={this.moveToBookshelf}
-                    title="Want to Read"
-                    books={this.state.books.filter(
-                      book => book.shelf === "wantToRead"
-                    )}
-                  />
-                  <Bookshelf
-                    onMoveToBookshelf={this.moveToBookshelf}
-                    title="Read"
-                    books={this.state.books.filter(
-                      book => book.shelf === "read"
-                    )}
-                  />
-                </div>
-              </div>
-              <div className="open-search">
-                <Link to="/search">Add a book</Link>
-              </div>
-            </div>
+            <Home
+              loadBooks={this.loadBooks}
+              books={this.state.books}
+              onMoveToBookshelf={this.moveToBookshelf}
+            />
           )}
         />
       </div>
